@@ -1,0 +1,9 @@
+!SESSION 2011-09-23 01:14:46.981 -----------------------------------------------
+eclipse.buildId=M20100211-1343
+java.version=1.6.0_20
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86 -data /home/aaps/Downloads/Dropbox/coderepos/datapanic/thegame
+
+!ENTRY org.eclipse.mylyn.tasks.ui 2 0 2011-09-23 01:15:04.673
+!MESSAGE No search provider was registed. Tasks search is not available.
