@@ -1,37 +1,67 @@
- # Project Overview
+# GameDev Utils (C++)
 
-This project is a collection of C++ classes for game development, focusing on essential components such as `Timer`, `Vector2D`, and `Animation`. These classes are designed to facilitate the creation of 2D games or simulations by providing convenient methods for handling time, vectors, and animations.
+I built this to fill gaps I kept hitting while making 2D games in C++. No frameworks, no bloat—just the bits I reused across projects. All classes are header-only, self-contained, and SDL-independent *except* where noted.
 
-## Key Classes
+## What’s in here
 
-### Timer
+### `Timer`
+- Starts, stops, pauses, resumes (with `Reset()`, `Pause()`, `Unpause()`, etc.)
+- `GetTicks()` returns milliseconds since start (uses SDL_GetTicks)
+- No drift—Delta time is just `tickDelta / 1000.0f`
 
-The `Timer` class provides functionality for managing game time. It offers methods to start, stop, pause, and unpause a timer, as well as retrieving the elapsed time in ticks. The `Timer` class uses the Simple DirectMedia Layer (SDL) library for its underlying time management.
+### `Vector2D`
+- Basic ops: `+`, `-`, `*`, `/` (scalar), `==`, `!=`
+- `Normalize()`, `Magnitude()`, `Distance(other)`
+- `Dot()`, `Cross()` (2D cross returns scalar z-component)
+- `Rotate(angleDeg)` modifies in place
+- Static helpers: `Zero()`, `UnitX()`, `UnitY()`, `FromPolar(r, thetaDeg)`
+- No dynamic allocation. All inlined.
 
-### Vector2D
+### `Animation`
+- Frame sequences stored as `std::vector<int>` under the hood
+- Methods: `Next()`, `Prev()`, `Rewind()`, `SetFrame(index)`, `SetCurrentAnimation(name)`
+- `GetCurrentFrame()`, `GetCurrentIndex()`, `GetLength()`, `GetName()`
+- Add animations with `AddAnimation(name, frames)` (frames = `std::vector<int>`)
+- `Test()` function included—run it to validate behavior (simple self-check)
 
-The `Vector2D` class offers various methods to manipulate 2D vectors, including rotation, magnitude calculation, normalization, dot product, cross product, and vector addition/subtraction. The class also provides a zero vector constant, distance calculation between two vectors, and static factory functions for creating new vectors.
+### `Base64`
+- `Encode(std::string)` → `std::string`
+- `Decode(std::string)` → `std::string` (throws on invalid input)
+- Pure C++ (no external deps), uses only STL. Handles padding.
 
-### Animation
+## Usage
 
-The `Animation` class manages sequences of integers (animation frames) and offers methods to retrieve the next frame, previous frame, current frame, index, name, length, and more. It supports setting the animation sequence and frame index, as well as adding a new animation by name from a collection of animations. The `Animation` class also includes a test function for demonstrating its functionality.
+1. Grab the headers (`Timer.h`, `Vector2D.h`, `Animation.h`, `Base64.h`)
+2. Drop them into your project tree
+3. `#include "..."` where needed  
+   *(For `Timer`, link `-lSDL2`)*
 
-### Base64
+Example minimal `main.cpp`:
 
-The `Base64` namespace contains two functions for encoding and decoding base64 strings in C++. These functions can be used to handle data that needs to be represented as ASCII text, such as configuration files or image data.
+```cpp
+#include "Vector2D.h"
+#include "Timer.h"
+#include <iostream>
 
-## Getting Started
+int main() {
+    Vector2D v{1.0f, 0.0f};
+    v.Rotate(90.0f); // v is now (0, 1)
+    
+    Timer t;
+    t.Start();
+    // ... do work ...
+    std::cout << "Elapsed: " << t.GetTicks() << "ms\n";
+}
+```
 
-To use this project, follow these steps:
+## Requirements
 
-1. Compile the source code using a C++ compiler like gcc or Clang. Ensure you have the SDL library installed and linked correctly.
-2. Include the required header files in your own projects to utilize the classes and functions provided here.
-3. Use the provided classes and functions as needed for your game development tasks.
+- C++17 compatible compiler (GCC 9+, Clang 9+, MSVC 2019+)
+- SDL2 only for `Timer` (CMake optional; just link `-lSDL2`)
+- No external dependencies beyond STL and SDL2
 
-## Contributing
+## Why this exists
 
-Contributions are welcome! If you find any issues, have suggestions for improvements, or would like to add new features, please open an issue or submit a pull request.
+I tired of copy-pasting half-broken vector math or debugging timing quirks from different tutorials. This is what I actually ship—tested in 3 small commercial-ish projects. If it breaks, I fix it. PRs welcome, but keep it simple.
 
-## License
-
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+—MIT license. See [LICENSE](LICENSE).
